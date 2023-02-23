@@ -290,8 +290,6 @@ contract DividendDistributor is IDividendDistributor {
         uint256 totalRealised;
     }
 
-    IERC20Extended public USDC =
-        IERC20Extended(0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8);
     IDexRouter public router;
 
     address[] public shareholders;
@@ -346,19 +344,10 @@ contract DividendDistributor is IDividendDistributor {
     }
 
     function deposit() external payable override onlyToken {
-        uint256 balanceBefore = USDC.balanceOf(address(this));
-
-        address[] memory path = new address[](2);
-        path[0] = router.WETH();
-        path[1] = address(USDC);
-
-        router.swapExactETHForTokensSupportingFeeOnTransferTokens{
-            value: msg.value
-        }(0, path, address(this), block.timestamp);
 
         //remove the swap above and make amount = msg.value
 
-        uint256 amount = USDC.balanceOf(address(this)).sub(balanceBefore);
+        uint256 amount = msg.value;
 
         totalDividends = totalDividends.add(amount);
         dividendsPerShare = dividendsPerShare.add(
@@ -374,7 +363,8 @@ contract DividendDistributor is IDividendDistributor {
         uint256 amount = getUnpaidEarnings(shareholder);
         if (amount > 0) {
             totalDistributed = totalDistributed.add(amount);
-            USDC.transfer(shareholder, amount);
+            (bool sent,) = payable(shareholder).call{value: amount}("");
+            require(sent, "RIP, withdrawl failed :( ");
             shareholderClaims[shareholder] = block.timestamp;
             shares[shareholder].totalRealised = shares[shareholder]
                 .totalRealised
