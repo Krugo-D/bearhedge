@@ -2,6 +2,7 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@openzeppelin/test-helpers": "^0.5.16",
     "hardhat": "^2.12.7"
   },
   "dependencies": {

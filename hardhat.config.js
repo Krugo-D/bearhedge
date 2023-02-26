@@ -9,13 +9,10 @@ module.exports = {
   solidity: "0.8.17",
   defaultNetwork: "localhost",
   networks: {
-    hardhat: {},
-    localhost: {
-      url: "http://127.0.0.1:8545",
-    },
-    goerliArbitrum: {
-      url: ALCHEMY_URL,
-      accounts: { mnemonic: MNEMONIC },
+    hardhat: {
+      forking: {
+        url: ALCHEMY_URL,
+      },
     },
   },
 };
