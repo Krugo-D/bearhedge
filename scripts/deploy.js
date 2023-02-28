@@ -13,6 +13,24 @@ async function main() {
   await bearhedge.deployed();
   console.log("Bearhedge deployed to:", bearhedge.address);
 
+  // Deploy Crowdsale
+  const [owner] = await ethers.getSigners();
+  const rate = 1;
+  const wallet = owner.address;
+  const token = bearhedge.address;
+
+  const Crowdsale = await hre.ethers.getContractFactory("MintedCrowdsale");
+  const crowdsale = await Crowdsale.deploy(rate, wallet, token);
+  await crowdsale.deployed();
+  console.log("Crowdsale deployed to:", crowdsale.address);
+
+  // Mint 1_000_000_000_000_000_000_000n Bearhedge tokens to deployer wallet
+  await bearhedge.mint(owner.address, 1000000000000000000000n);
+  console.log(
+    "Minted 1_000_000_000_000_000_000_000n Bearhedge tokens to deployer wallet"
+  );
+
+  // Add liquidity to Uniswap
   const router = await hre.ethers.getContractAt(
     "IDexRouter",
     "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
@@ -30,6 +48,7 @@ async function main() {
     deadline,
     { value: 100000000000000000000n }
   );
+  console.log("Liquidity added to Uniswap");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -14,7 +14,7 @@ __________                    .__               .___
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
-
+ 
 library SafeMath {
     function tryAdd(uint256 a, uint256 b)
         internal
