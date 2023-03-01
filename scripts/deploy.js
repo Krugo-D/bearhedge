@@ -14,7 +14,7 @@ async function main() {
   console.log("Bearhedge deployed to:", bearhedge.address);
 
   // Deploy Crowdsale
-  const [owner] = await ethers.getSigners();
+  const [owner, user1, user2, user3] = await ethers.getSigners();
   const rate = 1;
   const wallet = owner.address;
   const token = bearhedge.address;
@@ -32,7 +32,7 @@ async function main() {
 
   // Add half of total supply + 100 ETH to liquidity
   await bearhedge.approve(router.address, hre.ethers.constants.MaxUint256);
-  const deadline = Math.floor(Date.now() / 1000);
+  const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
   await router.addLiquidityETH(
     bearhedge.address,
     500000000000000000000n,
@@ -44,9 +44,6 @@ async function main() {
   );
   console.log("Liquidity added to Uniswap");
 
-  // Approve crowdsale contract to take tokens from owner
-  await bearhedge.approve(crowdsale.address, hre.ethers.constants.MaxUint256);
-
   // Exclude crowdsale contract from fees, limits, max wallet and dividends
   await bearhedge.setIsFeeExempt(crowdsale.address, true);
   await bearhedge.setIsLimitExempt(crowdsale.address, true);
@@ -55,6 +52,20 @@ async function main() {
   console.log(
     "Crowdsale contract excluded from fees, limits, max wallet and dividends"
   );
+
+  // Send 25% of total supply to crowdsale contract
+  await bearhedge.transfer(crowdsale.address, 250000000000000000000n);
+  console.log("25% of total supply sent to crowdsale contract");
+
+  // Use user1 account to connect to crowdsale and buy 1 ETH worth of tokens from crowdsale
+  await crowdsale
+    .connect(user1)
+    .buyTokens(user1.address, { value: 1000000000000000000n });
+  console.log("Tokens bought from crowdsale");
+
+  // Check if user1 has tokens
+  const user1Balance = await bearhedge.balanceOf(user1.address);
+  console.log("User1 balance:", user1Balance.toString());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
