@@ -14,7 +14,7 @@ __________                    .__               .___
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
- 
+
 library SafeMath {
     function tryAdd(uint256 a, uint256 b)
         internal
@@ -442,7 +442,6 @@ contract BEARHEDGE_Token is IERC20Extended, Ownable {
     uint8 private constant _decimals = 9;
     uint256 private constant _totalSupply = 1_000_000_000_000 * 10**_decimals;
 
-    address public USDC = 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8;
     address private constant DEAD = address(0xdead);
     address private constant ZERO = address(0);
     IDexRouter public router;
